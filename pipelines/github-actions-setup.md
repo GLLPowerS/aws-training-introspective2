@@ -21,6 +21,10 @@ In GitHub repo settings:
 
 - Add **Repository Variable** `AWS_REGION` (example: `us-east-1`)
 - Add **Repository Variable** `ECR_REPOSITORY` (example: `claim-status-api-dev-service`)
+- Add **Repository Variable** `EKS_CLUSTER_NAME` (example: `cl-01`)
+- Add **Repository Variable** `K8S_NAMESPACE` (example: `claims`)
+- Add **Repository Variable** `K8S_DEPLOYMENT` (example: `claim-status-api`)
+- Add **Repository Variable** `K8S_CONTAINER` (example: `claim-status-api`)
 - Add **Repository Secret** `AWS_ROLE_TO_ASSUME` from Terraform output:
   - `terraform -chdir=iac output -raw github_actions_role_arn`
 
@@ -31,6 +35,7 @@ Pipeline is already added at:
 - `.github/workflows/ecr-push.yml`
 
 It runs on push to `main` (for source and workflow changes) and on manual dispatch.
+The workflow now performs build, scan, push to ECR, and rollout to EKS.
 
 ## 4) Validate
 

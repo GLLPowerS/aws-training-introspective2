@@ -166,6 +166,14 @@ data "aws_iam_policy_document" "github_actions_ecr_push_permissions" {
     ]
     resources = [aws_ecr_repository.service.arn]
   }
+
+  statement {
+    sid = "EksDescribeCluster"
+    actions = [
+      "eks:DescribeCluster"
+    ]
+    resources = [module.eks.cluster_arn]
+  }
 }
 
 resource "aws_iam_policy" "github_actions_ecr_push" {
@@ -180,4 +188,26 @@ resource "aws_iam_role_policy_attachment" "github_actions_ecr_push" {
 
   role       = aws_iam_role.github_actions_ecr_push[0].name
   policy_arn = aws_iam_policy.github_actions_ecr_push[0].arn
+}
+
+resource "aws_eks_access_entry" "github_actions" {
+  count = var.enable_github_actions_role ? 1 : 0
+
+  cluster_name  = module.eks.cluster_name
+  principal_arn = aws_iam_role.github_actions_ecr_push[0].arn
+  type          = "STANDARD"
+}
+
+resource "aws_eks_access_policy_association" "github_actions" {
+  count = var.enable_github_actions_role ? 1 : 0
+
+  cluster_name  = module.eks.cluster_name
+  principal_arn = aws_iam_role.github_actions_ecr_push[0].arn
+  policy_arn    = "arn:${data.aws_partition.current.partition}:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+
+  access_scope {
+    type = "cluster"
+  }
+
+  depends_on = [aws_eks_access_entry.github_actions]
 }
