@@ -94,7 +94,19 @@ jobs:
         env:
           IMAGE_TAG: ${{ github.sha }}
         run: |
+          set -euo pipefail
+
           ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
           IMAGE_URI="$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG"
+
+          kubectl get namespace "$K8S_NAMESPACE" >/dev/null 2>&1 || kubectl create namespace "$K8S_NAMESPACE"
+
+          if ! kubectl -n "$K8S_NAMESPACE" get deployment "$K8S_DEPLOYMENT" >/dev/null 2>&1; then
+            echo "Deployment '$K8S_DEPLOYMENT' not found in namespace '$K8S_NAMESPACE'."
+            echo "Set GitHub variables K8S_NAMESPACE and K8S_DEPLOYMENT to existing values, or apply manifests first."
+            kubectl -n "$K8S_NAMESPACE" get deployments || true
+            exit 1
+          fi
+
           kubectl -n "$K8S_NAMESPACE" set image deployment/"$K8S_DEPLOYMENT" "$K8S_CONTAINER=$IMAGE_URI"
           kubectl -n "$K8S_NAMESPACE" rollout status deployment/"$K8S_DEPLOYMENT" --timeout=300s
