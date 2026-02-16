@@ -17,6 +17,9 @@ backend_integration_timeout_ms = 29000
 # Backend Kubernetes service account (for IRSA)
 k8s_namespace            = "claims"
 k8s_service_account_name = "claim-status-api"
+k8s_deployment_name      = "claim-status-api"
+k8s_container_name       = "claim-status-api"
+k8s_deployment_replicas  = 2
 
 # Scope Bedrock permission to model ARN, or keep '*' during initial development
 bedrock_model_arn = "*"

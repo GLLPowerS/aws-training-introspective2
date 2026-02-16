@@ -10,6 +10,7 @@ This folder contains initial Terraform scripts to provision core AWS infrastruct
 - Amazon CloudWatch Log Group for application logs
 - Amazon API Gateway HTTP API (with optional private backend routes/integrations)
 - IAM role + least-privilege policy for backend workload via IRSA
+- Kubernetes namespace, service account (IRSA annotation), and backend deployment bootstrap in EKS
 
 ## Files
 
@@ -21,6 +22,7 @@ This folder contains initial Terraform scripts to provision core AWS infrastruct
 - `data-platform.tf` — ECR, DynamoDB, S3, CloudWatch log group
 - `api-gateway.tf` — HTTP API, VPC Link, integrations, routes, stage
 - `iam.tf` — Backend IRSA role and least-privilege permissions
+- `k8s.tf` — Terraform-managed Kubernetes namespace, service account, and deployment
 - `main.tf` — Root entrypoint note
 - `outputs.tf` — Useful output values
 - `terraform.tfvars.example` — Example variable values

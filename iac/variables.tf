@@ -88,6 +88,24 @@ variable "k8s_service_account_name" {
   default     = "claim-status-api"
 }
 
+variable "k8s_deployment_name" {
+  description = "Kubernetes deployment name for backend workload"
+  type        = string
+  default     = "claim-status-api"
+}
+
+variable "k8s_container_name" {
+  description = "Container name inside backend Kubernetes deployment"
+  type        = string
+  default     = "claim-status-api"
+}
+
+variable "k8s_deployment_replicas" {
+  description = "Replica count for backend Kubernetes deployment"
+  type        = number
+  default     = 2
+}
+
 variable "bedrock_model_arn" {
   description = "Optional Bedrock model ARN to scope invoke permissions. Use '*' for broad access."
   type        = string
