@@ -1,0 +1,22 @@
+[
+    {
+        "claimId": "CLM-1001",
+        "noteId": "N-001",
+        "content": "Vehicle rear-end collision reported. Police report attached. Initial estimate pending body shop assessment."
+    },
+    {
+        "claimId": "CLM-1002",
+        "noteId": "N-002",
+        "content": "Medical receipts partially submitted. Requested additional documents for specialist follow-up and pharmacy invoices."
+    },
+    {
+        "claimId": "CLM-1003",
+        "noteId": "N-003",
+        "content": "Property water damage claim. Mitigation contractor completed drying. Awaiting final repair quote and insurer adjuster review."
+    },
+    {
+        "claimId": "CLM-1004",
+        "noteId": "N-004",
+        "content": "Theft claim approved after verification of purchase records and police case number. Payment processing initiated."
+    }
+]

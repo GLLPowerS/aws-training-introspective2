@@ -1,0 +1,37 @@
+[
+    {
+        "id": "CLM-1001",
+        "status": "OPEN",
+        "policyNumber": "POL-77821",
+        "customer": "Ava Wilson",
+        "updatedAt": "2026-02-12T10:14:00Z"
+    },
+    {
+        "id": "CLM-1002",
+        "status": "IN_REVIEW",
+        "policyNumber": "POL-12884",
+        "customer": "Noah Davis",
+        "updatedAt": "2026-02-13T16:30:00Z"
+    },
+    {
+        "id": "CLM-1003",
+        "status": "PENDING_INFO",
+        "policyNumber": "POL-34566",
+        "customer": "Emma Brown",
+        "updatedAt": "2026-02-14T08:42:00Z"
+    },
+    {
+        "id": "CLM-1004",
+        "status": "APPROVED",
+        "policyNumber": "POL-92470",
+        "customer": "Liam Martinez",
+        "updatedAt": "2026-02-15T12:05:00Z"
+    },
+    {
+        "id": "CLM-1005",
+        "status": "DENIED",
+        "policyNumber": "POL-61903",
+        "customer": "Sophia Johnson",
+        "updatedAt": "2026-02-15T17:55:00Z"
+    }
+]
