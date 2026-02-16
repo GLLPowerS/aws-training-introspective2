@@ -25,6 +25,6 @@ enable_github_actions_role = true
 create_github_oidc_provider = true
 
 # Set to your GitHub owner (organization or username)
-github_org = "Justinas"
+github_org = "GLLPowerS"
 github_repo = "aws-training-introspective2"
 github_branch = "main"
