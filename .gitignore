@@ -12,3 +12,10 @@ venv/
 
 # Project docs
 /docs/
+
+/local/
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
