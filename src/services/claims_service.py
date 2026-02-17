@@ -102,7 +102,9 @@ class ClaimsService:
             )
 
         notes_text = " ".join(note.get("content", "") for note in notes)
-        return self._summarize_with_bedrock_or_fallback(claim, notes_text)
+        summary = self._summarize_with_bedrock_or_fallback(claim, notes_text)
+        self._persist_summary_for_claim(claim_id, summary)
+        return summary
 
     def _load_json(self, path: Path) -> list[dict[str, Any]]:
         if not path.exists():
@@ -138,6 +140,7 @@ class ClaimsService:
             "policyNumber": item.get("policyNumber"),
             "customer": item.get("customer"),
             "updatedAt": item.get("updatedAt"),
+            "summary": item.get("summary"),
         }
 
     def _get_claim_from_dynamodb(self, claim_id: str) -> dict[str, Any] | None:
@@ -169,6 +172,62 @@ class ClaimsService:
                 ) from error
             raise
 
+    def _persist_summary_for_claim(self, claim_id: str, summary: dict[str, str]) -> None:
+        if self.claims_table_name:
+            self._persist_summary_for_dynamodb_claim(claim_id, summary)
+            return
+
+        self._persist_summary_for_local_claim(claim_id, summary)
+
+    def _persist_summary_for_local_claim(
+        self, claim_id: str, summary: dict[str, str]
+    ) -> None:
+        claims = self._load_json(self.claims_file)
+        claim_index = next(
+            (index for index, item in enumerate(claims) if item.get("id") == claim_id),
+            -1,
+        )
+        if claim_index == -1:
+            raise HTTPException(status_code=404, detail=f"Claim not found: {claim_id}")
+
+        claims[claim_index]["summary"] = summary
+        claims[claim_index]["updatedAt"] = datetime.now(timezone.utc).isoformat().replace(
+            "+00:00", "Z"
+        )
+        self._write_json(self.claims_file, claims)
+
+    def _persist_summary_for_dynamodb_claim(
+        self, claim_id: str, summary: dict[str, str]
+    ) -> None:
+        try:
+            self._dynamodb_table().update_item(
+                Key={"claim_id": claim_id},
+                UpdateExpression="SET #summary = :summary, #updatedAt = :updatedAt",
+                ExpressionAttributeNames={
+                    "#summary": "summary",
+                    "#updatedAt": "updatedAt",
+                },
+                ExpressionAttributeValues={
+                    ":summary": summary,
+                    ":updatedAt": datetime.now(timezone.utc)
+                    .isoformat()
+                    .replace("+00:00", "Z"),
+                },
+                ConditionExpression="attribute_exists(claim_id)",
+            )
+        except ClientError as error:
+            if (
+                error.response.get("Error", {}).get("Code")
+                == "ConditionalCheckFailedException"
+            ):
+                raise HTTPException(
+                    status_code=404, detail=f"Claim not found: {claim_id}"
+                ) from error
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to persist claim summary in DynamoDB: {error}",
+            ) from error
+
     def _build_fallback_summary(
         self, claim: dict[str, Any], notes_text: str
     ) -> dict[str, str]:
@@ -191,11 +250,10 @@ class ClaimsService:
         recommended_next_step = "Validate outstanding documents and update the claim timeline with the next adjudication checkpoint."
 
         return {
-            "overallSummary": overall,
-            "customerFacingSummary": customer_facing,
-            "adjusterFocusedSummary": adjuster_focused,
-            "recommendedNextStep": recommended_next_step,
-            "source": "local-fallback",
+            "summary": overall,
+            "customer-facing-summary": customer_facing,
+            "adjuster-focused-summary": adjuster_focused,
+            "recommended-next-step": recommended_next_step,
         }
 
     def _summarize_with_bedrock_or_fallback(
@@ -209,7 +267,7 @@ class ClaimsService:
 
         prompt = (
             "You are an insurance claim assistant. Return strict JSON with keys: "
-            "overallSummary, customerFacingSummary, adjusterFocusedSummary, recommendedNextStep. "
+            "summary, customer-facing-summary, adjuster-focused-summary, recommended-next-step. "
             f"Claim: {json.dumps(claim)}. Notes: {notes_text}"
         )
 
@@ -228,11 +286,10 @@ class ClaimsService:
             parsed = json.loads(text)
 
             return {
-                "overallSummary": parsed["overallSummary"],
-                "customerFacingSummary": parsed["customerFacingSummary"],
-                "adjusterFocusedSummary": parsed["adjusterFocusedSummary"],
-                "recommendedNextStep": parsed["recommendedNextStep"],
-                "source": "bedrock",
+                "summary": parsed["summary"],
+                "customer-facing-summary": parsed["customer-facing-summary"],
+                "adjuster-focused-summary": parsed["adjuster-focused-summary"],
+                "recommended-next-step": parsed["recommended-next-step"],
             }
         except (ClientError, BotoCoreError, ValueError, KeyError, json.JSONDecodeError):
             return self._build_fallback_summary(claim, notes_text)

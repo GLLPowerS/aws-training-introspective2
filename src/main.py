@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 from src.services.claims_service import ClaimsService
 from src.services.notes_service import NotesService
@@ -11,13 +11,18 @@ BASE_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = BASE_DIR.parent
 
 
+class SummaryObject(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    summary: str
+    customer_facing_summary: str = Field(alias="customer-facing-summary")
+    adjuster_focused_summary: str = Field(alias="adjuster-focused-summary")
+    recommended_next_step: str = Field(alias="recommended-next-step")
+
+
 class ClaimSummaryResponse(BaseModel):
     claimId: str
-    overallSummary: str
-    customerFacingSummary: str
-    adjusterFocusedSummary: str
-    recommendedNextStep: str
-    source: str
+    summary: SummaryObject
 
 
 class ClaimCreateRequest(BaseModel):
@@ -81,4 +86,4 @@ def delete_claim_note(claim_id: str, note_id: str) -> dict[str, Any]:
 def summarize_claim(claim_id: str) -> ClaimSummaryResponse:
     summary = claims_service.summarize_claim_or_404(claim_id)
 
-    return ClaimSummaryResponse(claimId=claim_id, **summary)
+    return ClaimSummaryResponse(claimId=claim_id, summary=summary)

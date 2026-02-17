@@ -40,7 +40,8 @@ data "aws_iam_policy_document" "backend_workload_permissions" {
   statement {
     sid = "DynamoDbWriteClaims"
     actions = [
-      "dynamodb:PutItem"
+      "dynamodb:PutItem",
+      "dynamodb:UpdateItem"
     ]
     resources = [aws_dynamodb_table.claims.arn]
   }
