@@ -4,6 +4,7 @@ This repository implements a claim-status API on AWS using EKS (EC2 worker nodes
 
 ## Task Description
 - See `docs/copilot/task-description.md`.
+- Architectural reasoning: `docs/architecture-reasoning.md`.
 
 ## Repository Structure
 - `src/` — FastAPI source code and Dockerfile.
@@ -125,3 +126,4 @@ If Bedrock invocation or parsing fails, the service falls back to deterministic 
 - Pipeline definitions: `pipelines/`
 - Scan evidence checklist: `scans/`
 - Observability queries/screenshots: `observability/`
+- Architectural decisions and trade-offs: `docs/architecture-reasoning.md`
