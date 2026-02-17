@@ -94,6 +94,53 @@ locals {
   )
   github_repo_sub              = "repo:${var.github_org}/${var.github_repo}:ref:refs/heads/${var.github_branch}"
   github_actions_role_name_eff = var.github_actions_role_name != "" ? var.github_actions_role_name : "${local.name_prefix}-github-actions-ecr-push"
+
+  computed_cluster_access_entries = concat(
+    var.cluster_access_entries,
+    var.add_current_caller_access ? [{
+      principal_arn = data.aws_caller_identity.current.arn
+      policy_arns   = var.current_caller_policy_arns
+    }] : []
+  )
+
+  cluster_access_entries_by_key = {
+    for idx, entry in local.computed_cluster_access_entries :
+    format("entry-%02d", idx) => entry
+  }
+
+  cluster_access_policy_associations = {
+    for item in flatten([
+      for entry_key, entry in local.cluster_access_entries_by_key : [
+        for policy_idx, policy_arn in entry.policy_arns : {
+          key           = "${entry_key}-policy-${policy_idx}"
+          principal_arn = entry.principal_arn
+          policy_arn    = policy_arn
+        }
+      ]
+    ]) : item.key => item
+  }
+}
+
+resource "aws_eks_access_entry" "cluster_access" {
+  for_each = local.cluster_access_entries_by_key
+
+  cluster_name  = module.eks.cluster_name
+  principal_arn = each.value.principal_arn
+  type          = "STANDARD"
+}
+
+resource "aws_eks_access_policy_association" "cluster_access" {
+  for_each = local.cluster_access_policy_associations
+
+  cluster_name  = module.eks.cluster_name
+  principal_arn = each.value.principal_arn
+  policy_arn    = each.value.policy_arn
+
+  access_scope {
+    type = "cluster"
+  }
+
+  depends_on = [aws_eks_access_entry.cluster_access]
 }
 
 data "tls_certificate" "github_actions" {

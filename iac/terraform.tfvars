@@ -28,3 +28,12 @@ create_github_oidc_provider = true
 github_org = "GLLPowerS"
 github_repo = "aws-training-introspective2"
 github_branch = "main"
+
+cluster_access_entries = [{
+	principal_arn="arn:aws:sts::139592182912:federated-user/c04-vlabuser177@stackroute.in",
+    policy_arns=[
+        "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy",
+        "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy",
+        "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+    ]
+}]

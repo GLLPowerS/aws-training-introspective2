@@ -11,6 +11,7 @@ This folder contains initial Terraform scripts to provision core AWS infrastruct
 - Amazon API Gateway HTTP API (with optional private backend routes/integrations)
 - IAM role + least-privilege policy for backend workload via IRSA
 - Kubernetes namespace, service account (IRSA annotation), and backend deployment bootstrap in EKS
+- Optional Terraform-managed EKS access entries/policy associations for IAM users/roles
 
 ## Files
 

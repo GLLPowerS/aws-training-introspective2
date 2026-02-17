@@ -11,6 +11,8 @@ data "aws_eks_cluster_auth" "this" {
 }
 
 resource "kubernetes_namespace_v1" "backend" {
+  count = var.enable_k8s_resources ? 1 : 0
+
   metadata {
     name = var.k8s_namespace
   }
@@ -19,9 +21,11 @@ resource "kubernetes_namespace_v1" "backend" {
 }
 
 resource "kubernetes_service_account_v1" "backend" {
+  count = var.enable_k8s_resources ? 1 : 0
+
   metadata {
     name      = var.k8s_service_account_name
-    namespace = kubernetes_namespace_v1.backend.metadata[0].name
+    namespace = kubernetes_namespace_v1.backend[0].metadata[0].name
 
     annotations = {
       "eks.amazonaws.com/role-arn" = aws_iam_role.backend_workload.arn
@@ -30,9 +34,11 @@ resource "kubernetes_service_account_v1" "backend" {
 }
 
 resource "kubernetes_deployment_v1" "backend" {
+  count = var.enable_k8s_resources ? 1 : 0
+
   metadata {
     name      = var.k8s_deployment_name
-    namespace = kubernetes_namespace_v1.backend.metadata[0].name
+    namespace = kubernetes_namespace_v1.backend[0].metadata[0].name
     labels = {
       app = var.k8s_deployment_name
     }
@@ -55,7 +61,7 @@ resource "kubernetes_deployment_v1" "backend" {
       }
 
       spec {
-        service_account_name = kubernetes_service_account_v1.backend.metadata[0].name
+        service_account_name = kubernetes_service_account_v1.backend[0].metadata[0].name
 
         container {
           name              = var.k8s_container_name

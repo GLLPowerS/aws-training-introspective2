@@ -106,6 +106,37 @@ variable "k8s_deployment_replicas" {
   default     = 2
 }
 
+variable "enable_k8s_resources" {
+  description = "Whether to manage in-cluster Kubernetes resources (namespace, service account, deployment)"
+  type        = bool
+  default     = true
+}
+
+variable "cluster_access_entries" {
+  description = "Additional IAM principals to grant EKS access policies at cluster scope"
+  type = list(object({
+    principal_arn = string
+    policy_arns   = list(string)
+  }))
+  default = []
+}
+
+variable "add_current_caller_access" {
+  description = "If true, add the current AWS caller as an EKS access entry with current_caller_policy_arns"
+  type        = bool
+  default     = false
+}
+
+variable "current_caller_policy_arns" {
+  description = "EKS access policy ARNs to associate when add_current_caller_access is true"
+  type        = list(string)
+  default = [
+    "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy",
+    "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy",
+    "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+  ]
+}
+
 variable "bedrock_model_arn" {
   description = "Optional Bedrock model ARN to scope invoke permissions. Use '*' for broad access."
   type        = string

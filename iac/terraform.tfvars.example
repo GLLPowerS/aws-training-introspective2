@@ -21,6 +21,23 @@ k8s_deployment_name      = "claim-status-api"
 k8s_container_name       = "claim-status-api"
 k8s_deployment_replicas  = 2
 
+# Optional: manage EKS console/kubectl access entries for specific IAM principals.
+# Example principal ARN formats:
+# - arn:aws:iam::<account-id>:user/<user-name>
+# - arn:aws:iam::<account-id>:role/<role-name>
+cluster_access_entries = []
+
+# Optional: add the Terraform caller as an EKS access entry.
+# Keep false if module-level creator access is already enabled to avoid duplicate entry conflicts.
+add_current_caller_access = false
+
+# Policies used only when add_current_caller_access = true
+current_caller_policy_arns = [
+	"arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy",
+	"arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy",
+	"arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+]
+
 # Scope Bedrock permission to model ARN, or keep '*' during initial development
 bedrock_model_arn = "*"
 
