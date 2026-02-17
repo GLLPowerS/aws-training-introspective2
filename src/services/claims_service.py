@@ -172,7 +172,9 @@ class ClaimsService:
                 ) from error
             raise
 
-    def _persist_summary_for_claim(self, claim_id: str, summary: dict[str, str]) -> None:
+    def _persist_summary_for_claim(
+        self, claim_id: str, summary: dict[str, str]
+    ) -> None:
         if self.claims_table_name:
             self._persist_summary_for_dynamodb_claim(claim_id, summary)
             return
@@ -191,8 +193,8 @@ class ClaimsService:
             raise HTTPException(status_code=404, detail=f"Claim not found: {claim_id}")
 
         claims[claim_index]["summary"] = summary
-        claims[claim_index]["updatedAt"] = datetime.now(timezone.utc).isoformat().replace(
-            "+00:00", "Z"
+        claims[claim_index]["updatedAt"] = (
+            datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
         )
         self._write_json(self.claims_file, claims)
 
