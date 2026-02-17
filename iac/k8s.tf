@@ -88,6 +88,11 @@ resource "kubernetes_deployment_v1" "backend" {
             value = var.aws_region
           }
 
+          env {
+            name  = "BEDROCK_MODEL_ID"
+            value = var.bedrock_model_id
+          }
+
           port {
             container_port = 8080
           }

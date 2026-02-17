@@ -40,6 +40,7 @@ current_caller_policy_arns = [
 
 # Scope Bedrock permission to model ARN, or keep '*' during initial development
 bedrock_model_arn = "*"
+bedrock_model_id  = ""
 
 # GitHub Actions -> ECR role (OIDC)
 enable_github_actions_role = true

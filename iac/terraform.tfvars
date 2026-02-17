@@ -22,6 +22,7 @@ k8s_service_account_name = "claim-status-api"
 
 # Scope Bedrock permission to model ARN, or keep '*' during initial development
 bedrock_model_arn = "*"
+bedrock_model_id  = "amazon.nova-lite-v1:0"
 
 enable_github_actions_role = true
 create_github_oidc_provider = true

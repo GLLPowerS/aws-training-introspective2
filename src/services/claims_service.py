@@ -267,31 +267,106 @@ class ClaimsService:
         if not model_id:
             return self._build_fallback_summary(claim, notes_text)
 
+        try:
+            client = boto3.client("bedrock-runtime", region_name=region)
+            field_prompts = {
+                "summary": (
+                    "Provide an overall one-to-three sentence claim summary for internal reference."
+                ),
+                "customer-facing-summary": (
+                    "Provide a customer-facing one-to-three sentence update in empathetic and plain language."
+                ),
+                "adjuster-focused-summary": (
+                    "Provide an adjuster-focused one-to-three sentence operational summary highlighting important claim handling details."
+                ),
+                "recommended-next-step": (
+                    "Provide exactly one concise recommended next action for the adjuster."
+                ),
+            }
+
+            generated_summary: dict[str, str] = {}
+            for field_key, field_instruction in field_prompts.items():
+                generated_summary[field_key] = self._invoke_bedrock_field(
+                    client=client,
+                    model_id=model_id,
+                    claim=claim,
+                    notes_text=notes_text,
+                    field_key=field_key,
+                    field_instruction=field_instruction,
+                )
+
+            return generated_summary
+        except (ClientError, BotoCoreError, ValueError, KeyError, json.JSONDecodeError):
+            return self._build_fallback_summary(claim, notes_text)
+
+    def _invoke_bedrock_field(
+        self,
+        client: Any,
+        model_id: str,
+        claim: dict[str, Any],
+        notes_text: str,
+        field_key: str,
+        field_instruction: str,
+    ) -> str:
         prompt = (
-            "You are an insurance claim assistant. Return strict JSON with keys: "
-            "summary, customer-facing-summary, adjuster-focused-summary, recommended-next-step. "
+            "You are an insurance claim assistant. "
+            f"Generate ONLY the '{field_key}' value. "
+            "Return plain text only, unless asked for JSON explicitly. "
+            "Do not include markdown fences. "
+            f"Instruction: {field_instruction} "
             f"Claim: {json.dumps(claim)}. Notes: {notes_text}"
         )
 
+        response = client.converse(
+            modelId=model_id,
+            messages=[{"role": "user", "content": [{"text": prompt}]}],
+            inferenceConfig={"maxTokens": 220, "temperature": 0.2},
+        )
+
+        text_blocks = response.get("output", {}).get("message", {}).get("content", [])
+        text = "".join(block.get("text", "") for block in text_blocks)
+        return self._extract_bedrock_field_text(text=text, field_key=field_key)
+
+    def _extract_bedrock_field_text(self, text: str, field_key: str) -> str:
+        cleaned_text = text.strip()
+        if not cleaned_text:
+            raise ValueError("Bedrock response was empty")
+
+        if cleaned_text.startswith("```"):
+            cleaned_text = cleaned_text.strip("`")
+            if cleaned_text.lower().startswith("json"):
+                cleaned_text = cleaned_text[4:].strip()
+
+        if not (cleaned_text.startswith("{") and cleaned_text.endswith("}")):
+            return cleaned_text
+
         try:
-            client = boto3.client("bedrock-runtime", region_name=region)
-            response = client.converse(
-                modelId=model_id,
-                messages=[{"role": "user", "content": [{"text": prompt}]}],
-                inferenceConfig={"maxTokens": 400, "temperature": 0.2},
-            )
+            parsed = json.loads(cleaned_text)
+        except json.JSONDecodeError:
+            return cleaned_text
 
-            text_blocks = (
-                response.get("output", {}).get("message", {}).get("content", [])
-            )
-            text = "".join(block.get("text", "") for block in text_blocks)
-            parsed = json.loads(text)
+        key_aliases = {
+            "summary": ["summary", "overall_summary", "overall-summary"],
+            "customer-facing-summary": [
+                "customer-facing-summary",
+                "customer_facing_summary",
+                "customerFacingSummary",
+            ],
+            "adjuster-focused-summary": [
+                "adjuster-focused-summary",
+                "adjuster_focused_summary",
+                "adjusterFocusedSummary",
+            ],
+            "recommended-next-step": [
+                "recommended-next-step",
+                "recommended_next_step",
+                "recommendedNextStep",
+            ],
+        }
 
-            return {
-                "summary": parsed["summary"],
-                "customer-facing-summary": parsed["customer-facing-summary"],
-                "adjuster-focused-summary": parsed["adjuster-focused-summary"],
-                "recommended-next-step": parsed["recommended-next-step"],
-            }
-        except (ClientError, BotoCoreError, ValueError, KeyError, json.JSONDecodeError):
-            return self._build_fallback_summary(claim, notes_text)
+        for key in key_aliases.get(field_key, [field_key]):
+            value = parsed.get(key)
+            if isinstance(value, str) and value.strip():
+                return value.strip()
+
+        raise KeyError(f"Missing expected field '{field_key}' in Bedrock JSON response")

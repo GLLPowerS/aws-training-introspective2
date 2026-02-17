@@ -173,6 +173,12 @@ variable "bedrock_model_arn" {
   default     = "*"
 }
 
+variable "bedrock_model_id" {
+  description = "Optional Bedrock model ID used by the backend summarize endpoint."
+  type        = string
+  default     = ""
+}
+
 variable "enable_github_actions_role" {
   description = "Create IAM role/policy for GitHub Actions to push images to ECR"
   type        = bool
