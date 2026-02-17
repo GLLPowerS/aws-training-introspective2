@@ -1,46 +1,46 @@
 [
-  {
-    "ParameterKey": "ProjectName",
-    "ParameterValue": "claim-status-api"
-  },
-  {
-    "ParameterKey": "Environment",
-    "ParameterValue": "dev"
-  },
-  {
-    "ParameterKey": "ArtifactBucketName",
-    "ParameterValue": "replace-with-codepipeline-artifacts-bucket"
-  },
-  {
-    "ParameterKey": "FullRepositoryId",
-    "ParameterValue": "GLLPowerS/aws-training-introspective2"
-  },
-  {
-    "ParameterKey": "BranchName",
-    "ParameterValue": "main"
-  },
-  {
-    "ParameterKey": "ConnectionArn",
-    "ParameterValue": "arn:aws:codestar-connections:us-east-1:123456789012:connection/replace-me"
-  },
-  {
-    "ParameterKey": "EcrRepositoryName",
-    "ParameterValue": "claim-status-api-dev-service"
-  },
-  {
-    "ParameterKey": "EksClusterName",
-    "ParameterValue": "cl-01"
-  },
-  {
-    "ParameterKey": "K8sNamespace",
-    "ParameterValue": "claims"
-  },
-  {
-    "ParameterKey": "K8sDeployment",
-    "ParameterValue": "claim-status-api"
-  },
-  {
-    "ParameterKey": "K8sContainer",
-    "ParameterValue": "claim-status-api"
-  }
+    {
+        "ParameterKey": "ProjectName",
+        "ParameterValue": "claim-status-api"
+    },
+    {
+        "ParameterKey": "Environment",
+        "ParameterValue": "dev"
+    },
+    {
+        "ParameterKey": "ArtifactBucketName",
+        "ParameterValue": "replace-with-codepipeline-artifacts-bucket"
+    },
+    {
+        "ParameterKey": "FullRepositoryId",
+        "ParameterValue": "GLLPowerS/aws-training-introspective2"
+    },
+    {
+        "ParameterKey": "BranchName",
+        "ParameterValue": "main"
+    },
+    {
+        "ParameterKey": "ConnectionArn",
+        "ParameterValue": "arn:aws:codestar-connections:us-east-1:123456789012:connection/replace-me"
+    },
+    {
+        "ParameterKey": "EcrRepositoryName",
+        "ParameterValue": "claim-status-api-dev-service"
+    },
+    {
+        "ParameterKey": "EksClusterName",
+        "ParameterValue": "cl-01"
+    },
+    {
+        "ParameterKey": "K8sNamespace",
+        "ParameterValue": "claims"
+    },
+    {
+        "ParameterKey": "K8sDeployment",
+        "ParameterValue": "claim-status-api"
+    },
+    {
+        "ParameterKey": "K8sContainer",
+        "ParameterValue": "claim-status-api"
+    }
 ]
