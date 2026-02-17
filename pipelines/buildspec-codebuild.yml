@@ -1,0 +1,43 @@
+version: 0.2
+
+env:
+  shell: bash
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.12
+    commands:
+      - set -euo pipefail
+      - curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+  pre_build:
+    commands:
+      - set -euo pipefail
+      - echo "Logging in to Amazon ECR..."
+      - AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+      - ECR_REGISTRY="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com"
+      - IMAGE_URI="$ECR_REGISTRY/$ECR_REPOSITORY:$CODEBUILD_RESOLVED_SOURCE_VERSION"
+      - aws ecr get-login-password --region "$AWS_DEFAULT_REGION" | docker login --username AWS --password-stdin "$ECR_REGISTRY"
+  build:
+    commands:
+      - set -euo pipefail
+      - echo "Building Docker image..."
+      - docker build -f src/Dockerfile -t "$ECR_REPOSITORY:$CODEBUILD_RESOLVED_SOURCE_VERSION" .
+      - echo "Scanning image (Trivy, HIGH/CRITICAL)..."
+      - trivy image --severity HIGH,CRITICAL --exit-code 1 --no-progress "$ECR_REPOSITORY:$CODEBUILD_RESOLVED_SOURCE_VERSION"
+      - docker tag "$ECR_REPOSITORY:$CODEBUILD_RESOLVED_SOURCE_VERSION" "$IMAGE_URI"
+      - docker tag "$ECR_REPOSITORY:$CODEBUILD_RESOLVED_SOURCE_VERSION" "$ECR_REGISTRY/$ECR_REPOSITORY:latest"
+  post_build:
+    commands:
+      - set -euo pipefail
+      - echo "Pushing images to ECR..."
+      - docker push "$IMAGE_URI"
+      - docker push "$ECR_REGISTRY/$ECR_REPOSITORY:latest"
+      - echo "Preparing deployment manifest..."
+      - printf '{"ImageURI":"%s"}' "$IMAGE_URI" > imageDetail.json
+      - printf '[{"name":"imageDetail","type":"file","files":[{"filename":"imageDetail.json"}]}]' > export.json
+artifacts:
+  files:
+    - imageDetail.json
+    - export.json
+  discard-paths: yes
