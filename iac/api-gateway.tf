@@ -32,7 +32,7 @@ resource "aws_apigatewayv2_integration" "get_claim" {
   api_id                 = aws_apigatewayv2_api.claims.id
   integration_type       = "HTTP_PROXY"
   integration_method     = "GET"
-  integration_uri        = var.backend_nlb_listener_arn
+  integration_uri        = local.backend_listener_arn
   connection_type        = "VPC_LINK"
   connection_id          = aws_apigatewayv2_vpc_link.backend[0].id
   payload_format_version = "1.0"
@@ -45,7 +45,7 @@ resource "aws_apigatewayv2_integration" "post_summarize" {
   api_id                 = aws_apigatewayv2_api.claims.id
   integration_type       = "HTTP_PROXY"
   integration_method     = "POST"
-  integration_uri        = var.backend_nlb_listener_arn
+  integration_uri        = local.backend_listener_arn
   connection_type        = "VPC_LINK"
   connection_id          = aws_apigatewayv2_vpc_link.backend[0].id
   payload_format_version = "1.0"
@@ -65,6 +65,14 @@ resource "aws_apigatewayv2_route" "post_summarize" {
 
   api_id    = aws_apigatewayv2_api.claims.id
   route_key = "POST /claims/{id}/summarize"
+  target    = "integrations/${aws_apigatewayv2_integration.post_summarize[0].id}"
+}
+
+resource "aws_apigatewayv2_route" "post_claim" {
+  count = local.enable_backend_integration ? 1 : 0
+
+  api_id    = aws_apigatewayv2_api.claims.id
+  route_key = "POST /claims"
   target    = "integrations/${aws_apigatewayv2_integration.post_summarize[0].id}"
 }
 

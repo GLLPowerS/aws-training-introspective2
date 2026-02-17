@@ -12,6 +12,8 @@ log_retention_days  = 14
 
 # Optional backend integration. Leave empty to skip API routes/integrations until NLB exists.
 backend_nlb_listener_arn       = ""
+enable_backend_nlb             = true
+backend_node_port              = 30080
 backend_integration_timeout_ms = 29000
 
 # Backend Kubernetes service account (for IRSA)

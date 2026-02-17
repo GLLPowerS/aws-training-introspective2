@@ -70,6 +70,18 @@ variable "backend_nlb_listener_arn" {
   default     = ""
 }
 
+variable "enable_backend_nlb" {
+  description = "Whether to create and manage an internal backend NLB when backend_nlb_listener_arn is empty"
+  type        = bool
+  default     = true
+}
+
+variable "backend_node_port" {
+  description = "NodePort exposed by the backend Kubernetes service for NLB target traffic"
+  type        = number
+  default     = 30080
+}
+
 variable "backend_integration_timeout_ms" {
   description = "HTTP API integration timeout in milliseconds"
   type        = number

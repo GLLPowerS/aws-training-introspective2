@@ -105,7 +105,7 @@ resource "kubernetes_service_v1" "backend" {
   }
 
   spec {
-    type = "ClusterIP"
+    type = "NodePort"
 
     selector = {
       app = var.k8s_deployment_name
@@ -114,6 +114,7 @@ resource "kubernetes_service_v1" "backend" {
     port {
       port        = 8080
       target_port = 8080
+      node_port   = var.backend_node_port
       protocol    = "TCP"
     }
   }
