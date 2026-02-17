@@ -4,7 +4,11 @@ Place API source code here.
 
 Required endpoints:
 - `POST /claims`
-- `GET /claims/{id}`
+- `GET /claims/{id}` (returns claim with `notes`)
+- `GET /claims/{id}/notes`
+- `POST /claims/{id}/notes`
+- `PUT /claims/{id}/notes/{noteId}`
+- `DELETE /claims/{id}/notes/{noteId}`
 - `POST /claims/{id}/summarize`
 
 ## Run Locally

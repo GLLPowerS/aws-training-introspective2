@@ -8,14 +8,18 @@ import boto3
 from botocore.exceptions import BotoCoreError, ClientError
 from fastapi import HTTPException
 
+from src.services.notes_service import NotesService
+
 
 class ClaimsService:
-    def __init__(self, project_root: Path) -> None:
+    def __init__(
+        self, project_root: Path, notes_service: NotesService | None = None
+    ) -> None:
         self.mocks_dir = project_root / "mocks"
         self.claims_file = self.mocks_dir / "claims.json"
-        self.notes_file = self.mocks_dir / "notes.json"
         self.aws_region = os.getenv("AWS_REGION", "us-east-1")
         self.claims_table_name = os.getenv("DYNAMODB_TABLE_NAME", "")
+        self.notes_service = notes_service or NotesService(project_root=project_root)
 
     def create_claim(self, claim: dict[str, Any]) -> dict[str, Any]:
         claim_id = str(claim.get("id", "")).strip()
@@ -63,9 +67,34 @@ class ClaimsService:
             raise HTTPException(status_code=404, detail=f"Claim not found: {claim_id}")
         return claim
 
+    def get_claim_with_notes_or_404(self, claim_id: str) -> dict[str, Any]:
+        claim = self.get_claim_or_404(claim_id)
+        notes = self.notes_service.list_notes_for_claim(claim_id)
+        return {**claim, "notes": notes}
+
+    def list_notes_for_claim_or_404(self, claim_id: str) -> list[dict[str, Any]]:
+        self.get_claim_or_404(claim_id)
+        return self.notes_service.list_notes_for_claim(claim_id)
+
+    def add_note_to_claim_or_404(self, claim_id: str, content: str) -> dict[str, Any]:
+        self.get_claim_or_404(claim_id)
+        return self.notes_service.add_note_to_claim(claim_id, content)
+
+    def update_note_for_claim_or_404(
+        self, claim_id: str, note_id: str, content: str
+    ) -> dict[str, Any]:
+        self.get_claim_or_404(claim_id)
+        return self.notes_service.update_note_for_claim(claim_id, note_id, content)
+
+    def delete_note_for_claim_or_404(
+        self, claim_id: str, note_id: str
+    ) -> dict[str, Any]:
+        self.get_claim_or_404(claim_id)
+        return self.notes_service.delete_note_for_claim(claim_id, note_id)
+
     def summarize_claim_or_404(self, claim_id: str) -> dict[str, str]:
         claim = self.get_claim_or_404(claim_id)
-        notes = self._get_notes_for_claim(claim_id)
+        notes = self.notes_service.list_notes_for_claim(claim_id)
 
         if not notes:
             raise HTTPException(
@@ -139,10 +168,6 @@ class ClaimsService:
                     status_code=409, detail=f"Claim already exists: {claim['id']}"
                 ) from error
             raise
-
-    def _get_notes_for_claim(self, claim_id: str) -> list[dict[str, Any]]:
-        notes = self._load_json(self.notes_file)
-        return [item for item in notes if item.get("claimId") == claim_id]
 
     def _build_fallback_summary(
         self, claim: dict[str, Any], notes_text: str

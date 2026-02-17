@@ -74,6 +74,11 @@ resource "kubernetes_deployment_v1" "backend" {
           }
 
           env {
+            name  = "DYNAMODB_NOTES_TABLE_NAME"
+            value = aws_dynamodb_table.claim_notes.name
+          }
+
+          env {
             name  = "AWS_REGION"
             value = var.aws_region
           }

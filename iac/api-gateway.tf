@@ -52,6 +52,58 @@ resource "aws_apigatewayv2_integration" "post_summarize" {
   timeout_milliseconds   = var.backend_integration_timeout_ms
 }
 
+resource "aws_apigatewayv2_integration" "get_notes" {
+  count = local.enable_backend_integration ? 1 : 0
+
+  api_id                 = aws_apigatewayv2_api.claims.id
+  integration_type       = "HTTP_PROXY"
+  integration_method     = "GET"
+  integration_uri        = local.backend_listener_arn
+  connection_type        = "VPC_LINK"
+  connection_id          = aws_apigatewayv2_vpc_link.backend[0].id
+  payload_format_version = "1.0"
+  timeout_milliseconds   = var.backend_integration_timeout_ms
+}
+
+resource "aws_apigatewayv2_integration" "post_notes" {
+  count = local.enable_backend_integration ? 1 : 0
+
+  api_id                 = aws_apigatewayv2_api.claims.id
+  integration_type       = "HTTP_PROXY"
+  integration_method     = "POST"
+  integration_uri        = local.backend_listener_arn
+  connection_type        = "VPC_LINK"
+  connection_id          = aws_apigatewayv2_vpc_link.backend[0].id
+  payload_format_version = "1.0"
+  timeout_milliseconds   = var.backend_integration_timeout_ms
+}
+
+resource "aws_apigatewayv2_integration" "put_note" {
+  count = local.enable_backend_integration ? 1 : 0
+
+  api_id                 = aws_apigatewayv2_api.claims.id
+  integration_type       = "HTTP_PROXY"
+  integration_method     = "PUT"
+  integration_uri        = local.backend_listener_arn
+  connection_type        = "VPC_LINK"
+  connection_id          = aws_apigatewayv2_vpc_link.backend[0].id
+  payload_format_version = "1.0"
+  timeout_milliseconds   = var.backend_integration_timeout_ms
+}
+
+resource "aws_apigatewayv2_integration" "delete_note" {
+  count = local.enable_backend_integration ? 1 : 0
+
+  api_id                 = aws_apigatewayv2_api.claims.id
+  integration_type       = "HTTP_PROXY"
+  integration_method     = "DELETE"
+  integration_uri        = local.backend_listener_arn
+  connection_type        = "VPC_LINK"
+  connection_id          = aws_apigatewayv2_vpc_link.backend[0].id
+  payload_format_version = "1.0"
+  timeout_milliseconds   = var.backend_integration_timeout_ms
+}
+
 resource "aws_apigatewayv2_route" "get_claim" {
   count = local.enable_backend_integration ? 1 : 0
 
@@ -74,6 +126,38 @@ resource "aws_apigatewayv2_route" "post_claim" {
   api_id    = aws_apigatewayv2_api.claims.id
   route_key = "POST /claims"
   target    = "integrations/${aws_apigatewayv2_integration.post_summarize[0].id}"
+}
+
+resource "aws_apigatewayv2_route" "get_notes" {
+  count = local.enable_backend_integration ? 1 : 0
+
+  api_id    = aws_apigatewayv2_api.claims.id
+  route_key = "GET /claims/{id}/notes"
+  target    = "integrations/${aws_apigatewayv2_integration.get_notes[0].id}"
+}
+
+resource "aws_apigatewayv2_route" "post_notes" {
+  count = local.enable_backend_integration ? 1 : 0
+
+  api_id    = aws_apigatewayv2_api.claims.id
+  route_key = "POST /claims/{id}/notes"
+  target    = "integrations/${aws_apigatewayv2_integration.post_notes[0].id}"
+}
+
+resource "aws_apigatewayv2_route" "put_note" {
+  count = local.enable_backend_integration ? 1 : 0
+
+  api_id    = aws_apigatewayv2_api.claims.id
+  route_key = "PUT /claims/{id}/notes/{noteId}"
+  target    = "integrations/${aws_apigatewayv2_integration.put_note[0].id}"
+}
+
+resource "aws_apigatewayv2_route" "delete_note" {
+  count = local.enable_backend_integration ? 1 : 0
+
+  api_id    = aws_apigatewayv2_api.claims.id
+  route_key = "DELETE /claims/{id}/notes/{noteId}"
+  target    = "integrations/${aws_apigatewayv2_integration.delete_note[0].id}"
 }
 
 resource "aws_apigatewayv2_stage" "default" {

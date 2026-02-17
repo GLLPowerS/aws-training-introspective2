@@ -23,6 +23,11 @@ output "dynamodb_table_name" {
   value       = aws_dynamodb_table.claims.name
 }
 
+output "dynamodb_notes_table_name" {
+  description = "DynamoDB notes table name"
+  value       = aws_dynamodb_table.claim_notes.name
+}
+
 output "s3_bucket_name" {
   description = "S3 bucket for claim notes"
   value       = aws_s3_bucket.claim_notes.bucket
