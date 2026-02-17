@@ -54,3 +54,8 @@ resource "aws_cloudwatch_log_group" "application" {
   name              = "/${local.name_prefix}/application"
   retention_in_days = var.log_retention_days
 }
+
+resource "aws_cloudwatch_log_group" "api_gateway_access" {
+  name              = "/aws/apigateway/${local.name_prefix}-claims-api-access"
+  retention_in_days = var.log_retention_days
+}

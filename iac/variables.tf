@@ -64,6 +64,24 @@ variable "log_retention_days" {
   default     = 14
 }
 
+variable "cluster_enabled_log_types" {
+  description = "EKS control plane log types to publish to CloudWatch"
+  type        = list(string)
+  default = [
+    "api",
+    "audit",
+    "authenticator",
+    "controllerManager",
+    "scheduler"
+  ]
+}
+
+variable "enable_container_insights" {
+  description = "Enable Amazon CloudWatch Observability add-on for EKS workload logs and metrics"
+  type        = bool
+  default     = true
+}
+
 variable "backend_nlb_listener_arn" {
   description = "NLB listener ARN for private API Gateway integration to backend service"
   type        = string
