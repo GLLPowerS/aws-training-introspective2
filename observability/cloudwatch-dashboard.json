@@ -1,122 +1,172 @@
 {
-  "widgets": [
-    {
-      "type": "metric",
-      "x": 0,
-      "y": 0,
-      "width": 12,
-      "height": 6,
-      "properties": {
-        "title": "API Gateway - Request/Error Rates",
-        "view": "timeSeries",
-        "stacked": false,
-        "region": "us-east-1",
-        "stat": "Sum",
-        "period": 60,
-        "metrics": [
-          [ "AWS/ApiGateway", "Count", "ApiId", "7hnpccv7ai", "Stage", "$default", { "label": "Requests" } ],
-          [ ".", "4xx", ".", ".", ".", ".", { "label": "4xx" } ],
-          [ ".", "5xx", ".", ".", ".", ".", { "label": "5xx" } ]
-        ]
-      }
-    },
-    {
-      "type": "metric",
-      "x": 12,
-      "y": 0,
-      "width": 12,
-      "height": 6,
-      "properties": {
-        "title": "API Gateway - Latency",
-        "view": "timeSeries",
-        "stacked": false,
-        "region": "us-east-1",
-        "stat": "Average",
-        "period": 60,
-        "metrics": [
-          [ "AWS/ApiGateway", "Latency", "ApiId", "7hnpccv7ai", "Stage", "$default", { "label": "Latency" } ],
-          [ ".", "IntegrationLatency", ".", ".", ".", ".", { "label": "IntegrationLatency" } ]
-        ]
-      }
-    },
-    {
-      "type": "metric",
-      "x": 0,
-      "y": 6,
-      "width": 12,
-      "height": 6,
-      "properties": {
-        "title": "EKS Claims Pods - CPU Utilization",
-        "view": "timeSeries",
-        "region": "us-east-1",
-        "period": 300,
-        "stat": "Average",
-        "metrics": [
-          [
-            {
-              "expression": "SEARCH('{ContainerInsights,ClusterName,Namespace,PodName} MetricName=\"pod_cpu_utilization\" ClusterName=\"cl-01\" Namespace=\"claims\"', 'Average', 300)",
-              "label": "pod_cpu_utilization",
-              "id": "e1"
+    "widgets": [
+        {
+            "type": "metric",
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 6,
+            "properties": {
+                "title": "API Gateway - Request/Error Rates",
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "us-east-1",
+                "stat": "Sum",
+                "period": 60,
+                "metrics": [
+                    [
+                        "AWS/ApiGateway",
+                        "Count",
+                        "ApiId",
+                        "7hnpccv7ai",
+                        "Stage",
+                        "$default",
+                        {
+                            "label": "Requests"
+                        }
+                    ],
+                    [
+                        ".",
+                        "4xx",
+                        ".",
+                        ".",
+                        ".",
+                        ".",
+                        {
+                            "label": "4xx"
+                        }
+                    ],
+                    [
+                        ".",
+                        "5xx",
+                        ".",
+                        ".",
+                        ".",
+                        ".",
+                        {
+                            "label": "5xx"
+                        }
+                    ]
+                ]
             }
-          ]
-        ]
-      }
-    },
-    {
-      "type": "metric",
-      "x": 12,
-      "y": 6,
-      "width": 12,
-      "height": 6,
-      "properties": {
-        "title": "EKS Claims Pods - Memory Utilization",
-        "view": "timeSeries",
-        "region": "us-east-1",
-        "period": 300,
-        "stat": "Average",
-        "metrics": [
-          [
-            {
-              "expression": "SEARCH('{ContainerInsights,ClusterName,Namespace,PodName} MetricName=\"pod_memory_utilization\" ClusterName=\"cl-01\" Namespace=\"claims\"', 'Average', 300)",
-              "label": "pod_memory_utilization",
-              "id": "e1"
+        },
+        {
+            "type": "metric",
+            "x": 12,
+            "y": 0,
+            "width": 12,
+            "height": 6,
+            "properties": {
+                "title": "API Gateway - Latency",
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "us-east-1",
+                "stat": "Average",
+                "period": 60,
+                "metrics": [
+                    [
+                        "AWS/ApiGateway",
+                        "Latency",
+                        "ApiId",
+                        "7hnpccv7ai",
+                        "Stage",
+                        "$default",
+                        {
+                            "label": "Latency"
+                        }
+                    ],
+                    [
+                        ".",
+                        "IntegrationLatency",
+                        ".",
+                        ".",
+                        ".",
+                        ".",
+                        {
+                            "label": "IntegrationLatency"
+                        }
+                    ]
+                ]
             }
-          ]
-        ]
-      }
-    },
-    {
-      "type": "metric",
-      "x": 0,
-      "y": 12,
-      "width": 12,
-      "height": 6,
-      "properties": {
-        "title": "EKS Claims Pods - Container Restarts",
-        "view": "timeSeries",
-        "region": "us-east-1",
-        "period": 300,
-        "stat": "Sum",
-        "metrics": [
-          [
-            {
-              "expression": "SEARCH('{ContainerInsights,ClusterName,Namespace,PodName} MetricName=\"pod_number_of_container_restarts\" ClusterName=\"cl-01\" Namespace=\"claims\"', 'Sum', 300)",
-              "label": "pod_number_of_container_restarts",
-              "id": "e1"
+        },
+        {
+            "type": "metric",
+            "x": 0,
+            "y": 6,
+            "width": 12,
+            "height": 6,
+            "properties": {
+                "title": "EKS Claims Pods - CPU Utilization",
+                "view": "timeSeries",
+                "region": "us-east-1",
+                "period": 300,
+                "stat": "Average",
+                "metrics": [
+                    [
+                        {
+                            "expression": "SEARCH('{ContainerInsights,ClusterName,Namespace,PodName} MetricName=\"pod_cpu_utilization\" ClusterName=\"cl-01\" Namespace=\"claims\"', 'Average', 300)",
+                            "label": "pod_cpu_utilization",
+                            "id": "e1"
+                        }
+                    ]
+                ]
             }
-          ]
-        ]
-      }
-    },
-    {
-      "type": "text",
-      "x": 12,
-      "y": 12,
-      "width": 12,
-      "height": 6,
-      "properties": {
-        "markdown": "### Lab Evidence Notes\n- Capture dashboard screenshots after test traffic\n- Pair with Logs Insights screenshots from observability/README.md\n- Include short explanation for any 4xx/5xx spikes"
-      }
-    }
-  ]
+        },
+        {
+            "type": "metric",
+            "x": 12,
+            "y": 6,
+            "width": 12,
+            "height": 6,
+            "properties": {
+                "title": "EKS Claims Pods - Memory Utilization",
+                "view": "timeSeries",
+                "region": "us-east-1",
+                "period": 300,
+                "stat": "Average",
+                "metrics": [
+                    [
+                        {
+                            "expression": "SEARCH('{ContainerInsights,ClusterName,Namespace,PodName} MetricName=\"pod_memory_utilization\" ClusterName=\"cl-01\" Namespace=\"claims\"', 'Average', 300)",
+                            "label": "pod_memory_utilization",
+                            "id": "e1"
+                        }
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "metric",
+            "x": 0,
+            "y": 12,
+            "width": 12,
+            "height": 6,
+            "properties": {
+                "title": "EKS Claims Pods - Container Restarts",
+                "view": "timeSeries",
+                "region": "us-east-1",
+                "period": 300,
+                "stat": "Sum",
+                "metrics": [
+                    [
+                        {
+                            "expression": "SEARCH('{ContainerInsights,ClusterName,Namespace,PodName} MetricName=\"pod_number_of_container_restarts\" ClusterName=\"cl-01\" Namespace=\"claims\"', 'Sum', 300)",
+                            "label": "pod_number_of_container_restarts",
+                            "id": "e1"
+                        }
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "text",
+            "x": 12,
+            "y": 12,
+            "width": 12,
+            "height": 6,
+            "properties": {
+                "markdown": "### Lab Evidence Notes\n- Capture dashboard screenshots after test traffic\n- Pair with Logs Insights screenshots from observability/README.md\n- Include short explanation for any 4xx/5xx spikes"
+            }
+        }
+    ]
 }
