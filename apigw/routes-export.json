@@ -1,0 +1,53 @@
+{
+    "Items": [
+        {
+            "ApiKeyRequired": false,
+            "AuthorizationType": "NONE",
+            "RouteId": "d926zob",
+            "RouteKey": "POST /claims/{id}/summarize",
+            "Target": "integrations/wgsvo2p"
+        },
+        {
+            "ApiKeyRequired": false,
+            "AuthorizationType": "NONE",
+            "RouteId": "l4i5xbs",
+            "RouteKey": "GET /claims/{id}/notes",
+            "Target": "integrations/ghxnlg8"
+        },
+        {
+            "ApiKeyRequired": false,
+            "AuthorizationType": "NONE",
+            "RouteId": "lmbu42g",
+            "RouteKey": "POST /claims/{id}/notes",
+            "Target": "integrations/jxw2tio"
+        },
+        {
+            "ApiKeyRequired": false,
+            "AuthorizationType": "NONE",
+            "RouteId": "ntp0eqj",
+            "RouteKey": "POST /claims",
+            "Target": "integrations/wgsvo2p"
+        },
+        {
+            "ApiKeyRequired": false,
+            "AuthorizationType": "NONE",
+            "RouteId": "pa621bq",
+            "RouteKey": "GET /claims/{id}",
+            "Target": "integrations/z1dghpm"
+        },
+        {
+            "ApiKeyRequired": false,
+            "AuthorizationType": "NONE",
+            "RouteId": "rkqpnoi",
+            "RouteKey": "DELETE /claims/{id}/notes/{noteId}",
+            "Target": "integrations/ow9p7zu"
+        },
+        {
+            "ApiKeyRequired": false,
+            "AuthorizationType": "NONE",
+            "RouteId": "zj0fveu",
+            "RouteKey": "PUT /claims/{id}/notes/{noteId}",
+            "Target": "integrations/g1hd961"
+        }
+    ]
+}

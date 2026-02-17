@@ -1,0 +1,141 @@
+openapi: "3.0.1"
+info:
+  title: "claim-status-api-dev-claims-api"
+  version: "2026-02-17 06:33:15UTC"
+servers:
+- url: "https://7hnpccv7ai.execute-api.us-east-1.amazonaws.com/{basePath}"
+  variables:
+    basePath:
+      default: ""
+tags:
+- name: "Project"
+  x-amazon-apigateway-tag-value: "claim-status-api"
+- name: "Environment"
+  x-amazon-apigateway-tag-value: "dev"
+- name: "ManagedBy"
+  x-amazon-apigateway-tag-value: "terraform"
+paths:
+  /claims/{id}/notes/{noteId}:
+    put:
+      responses:
+        default:
+          description: "Default response for PUT /claims/{id}/notes/{noteId}"
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "1.0"
+        connectionId: "5k415j"
+        type: "http_proxy"
+        httpMethod: "PUT"
+        uri: "arn:aws:elasticloadbalancing:us-east-1:139592182912:listener/net/claim-status-api-dev-backend-nlb/b1f61696b69b8782/c1338a528c7027ab"
+        connectionType: "VPC_LINK"
+        timeoutInMillis: 29000
+    delete:
+      responses:
+        default:
+          description: "Default response for DELETE /claims/{id}/notes/{noteId}"
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "1.0"
+        connectionId: "5k415j"
+        type: "http_proxy"
+        httpMethod: "DELETE"
+        uri: "arn:aws:elasticloadbalancing:us-east-1:139592182912:listener/net/claim-status-api-dev-backend-nlb/b1f61696b69b8782/c1338a528c7027ab"
+        connectionType: "VPC_LINK"
+        timeoutInMillis: 29000
+    parameters:
+    - name: "id"
+      in: "path"
+      description: "Generated path parameter for id"
+      required: true
+      schema:
+        type: "string"
+    - name: "noteId"
+      in: "path"
+      description: "Generated path parameter for noteId"
+      required: true
+      schema:
+        type: "string"
+  /claims/{id}:
+    get:
+      responses:
+        default:
+          description: "Default response for GET /claims/{id}"
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "1.0"
+        connectionId: "5k415j"
+        type: "http_proxy"
+        httpMethod: "GET"
+        uri: "arn:aws:elasticloadbalancing:us-east-1:139592182912:listener/net/claim-status-api-dev-backend-nlb/b1f61696b69b8782/c1338a528c7027ab"
+        connectionType: "VPC_LINK"
+        timeoutInMillis: 29000
+    parameters:
+    - name: "id"
+      in: "path"
+      description: "Generated path parameter for id"
+      required: true
+      schema:
+        type: "string"
+  /claims/{id}/notes:
+    get:
+      responses:
+        default:
+          description: "Default response for GET /claims/{id}/notes"
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "1.0"
+        connectionId: "5k415j"
+        type: "http_proxy"
+        httpMethod: "GET"
+        uri: "arn:aws:elasticloadbalancing:us-east-1:139592182912:listener/net/claim-status-api-dev-backend-nlb/b1f61696b69b8782/c1338a528c7027ab"
+        connectionType: "VPC_LINK"
+        timeoutInMillis: 29000
+    post:
+      responses:
+        default:
+          description: "Default response for POST /claims/{id}/notes"
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "1.0"
+        connectionId: "5k415j"
+        type: "http_proxy"
+        httpMethod: "POST"
+        uri: "arn:aws:elasticloadbalancing:us-east-1:139592182912:listener/net/claim-status-api-dev-backend-nlb/b1f61696b69b8782/c1338a528c7027ab"
+        connectionType: "VPC_LINK"
+        timeoutInMillis: 29000
+    parameters:
+    - name: "id"
+      in: "path"
+      description: "Generated path parameter for id"
+      required: true
+      schema:
+        type: "string"
+  /claims:
+    post:
+      responses:
+        default:
+          description: "Default response for POST /claims"
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "1.0"
+        connectionId: "5k415j"
+        type: "http_proxy"
+        httpMethod: "POST"
+        uri: "arn:aws:elasticloadbalancing:us-east-1:139592182912:listener/net/claim-status-api-dev-backend-nlb/b1f61696b69b8782/c1338a528c7027ab"
+        connectionType: "VPC_LINK"
+        timeoutInMillis: 29000
+  /claims/{id}/summarize:
+    post:
+      responses:
+        default:
+          description: "Default response for POST /claims/{id}/summarize"
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "1.0"
+        connectionId: "5k415j"
+        type: "http_proxy"
+        httpMethod: "POST"
+        uri: "arn:aws:elasticloadbalancing:us-east-1:139592182912:listener/net/claim-status-api-dev-backend-nlb/b1f61696b69b8782/c1338a528c7027ab"
+        connectionType: "VPC_LINK"
+        timeoutInMillis: 29000
+    parameters:
+    - name: "id"
+      in: "path"
+      description: "Generated path parameter for id"
+      required: true
+      schema:
+        type: "string"
+x-amazon-apigateway-importexport-version: "1.0"
