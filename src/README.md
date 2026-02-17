@@ -3,6 +3,7 @@
 Place API source code here.
 
 Required endpoints:
+- `POST /claims`
 - `GET /claims/{id}`
 - `POST /claims/{id}/summarize`
 

@@ -68,6 +68,16 @@ resource "kubernetes_deployment_v1" "backend" {
           image             = "${aws_ecr_repository.service.repository_url}:latest"
           image_pull_policy = "Always"
 
+          env {
+            name  = "DYNAMODB_TABLE_NAME"
+            value = aws_dynamodb_table.claims.name
+          }
+
+          env {
+            name  = "AWS_REGION"
+            value = var.aws_region
+          }
+
           port {
             container_port = 8080
           }
@@ -80,5 +90,31 @@ resource "kubernetes_deployment_v1" "backend" {
     ignore_changes = [
       spec[0].template[0].spec[0].container[0].image
     ]
+  }
+}
+
+resource "kubernetes_service_v1" "backend" {
+  count = var.enable_k8s_resources ? 1 : 0
+
+  metadata {
+    name      = var.k8s_deployment_name
+    namespace = kubernetes_namespace_v1.backend[0].metadata[0].name
+    labels = {
+      app = var.k8s_deployment_name
+    }
+  }
+
+  spec {
+    type = "ClusterIP"
+
+    selector = {
+      app = var.k8s_deployment_name
+    }
+
+    port {
+      port        = 8080
+      target_port = 8080
+      protocol    = "TCP"
+    }
   }
 }

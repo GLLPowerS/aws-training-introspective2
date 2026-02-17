@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -13,8 +14,43 @@ class ClaimsService:
         self.mocks_dir = project_root / "mocks"
         self.claims_file = self.mocks_dir / "claims.json"
         self.notes_file = self.mocks_dir / "notes.json"
+        self.aws_region = os.getenv("AWS_REGION", "us-east-1")
+        self.claims_table_name = os.getenv("DYNAMODB_TABLE_NAME", "")
+
+    def create_claim(self, claim: dict[str, Any]) -> dict[str, Any]:
+        claim_id = str(claim.get("id", "")).strip()
+        if not claim_id:
+            raise HTTPException(status_code=400, detail="Claim id is required")
+
+        claim_to_store = {
+            "id": claim_id,
+            "status": str(claim.get("status", "")).strip(),
+            "policyNumber": str(claim.get("policyNumber", "")).strip(),
+            "customer": str(claim.get("customer", "")).strip(),
+            "updatedAt": str(claim.get("updatedAt") or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")),
+        }
+
+        if self.claims_table_name:
+            try:
+                self._put_claim_to_dynamodb(claim_to_store)
+                return claim_to_store
+            except HTTPException:
+                raise
+            except (ClientError, BotoCoreError) as error:
+                raise HTTPException(status_code=500, detail=f"Failed to write claim to DynamoDB: {error}") from error
+
+        self._put_claim_to_local_file(claim_to_store)
+        return claim_to_store
 
     def get_claim_or_404(self, claim_id: str) -> dict[str, Any]:
+        if self.claims_table_name:
+            try:
+                claim = self._get_claim_from_dynamodb(claim_id)
+                if claim is not None:
+                    return claim
+            except (ClientError, BotoCoreError):
+                pass
+
         claims = self._load_json(self.claims_file)
         claim = next((item for item in claims if item.get("id") == claim_id), None)
         if claim is None:
@@ -40,6 +76,54 @@ class ClaimsService:
             )
         with path.open("r", encoding="utf-8") as file:
             return json.load(file)
+
+    def _write_json(self, path: Path, data: list[dict[str, Any]]) -> None:
+        with path.open("w", encoding="utf-8") as file:
+            json.dump(data, file, indent=4)
+
+    def _put_claim_to_local_file(self, claim: dict[str, Any]) -> None:
+        claims = self._load_json(self.claims_file)
+        exists = any(item.get("id") == claim["id"] for item in claims)
+        if exists:
+            raise HTTPException(status_code=409, detail=f"Claim already exists: {claim['id']}")
+        claims.append(claim)
+        self._write_json(self.claims_file, claims)
+
+    def _dynamodb_table(self):
+        return boto3.resource("dynamodb", region_name=self.aws_region).Table(self.claims_table_name)
+
+    def _map_dynamodb_item(self, item: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "id": item.get("claim_id"),
+            "status": item.get("status"),
+            "policyNumber": item.get("policyNumber"),
+            "customer": item.get("customer"),
+            "updatedAt": item.get("updatedAt"),
+        }
+
+    def _get_claim_from_dynamodb(self, claim_id: str) -> dict[str, Any] | None:
+        response = self._dynamodb_table().get_item(Key={"claim_id": claim_id})
+        item = response.get("Item")
+        if not item:
+            return None
+        return self._map_dynamodb_item(item)
+
+    def _put_claim_to_dynamodb(self, claim: dict[str, Any]) -> None:
+        try:
+            self._dynamodb_table().put_item(
+                Item={
+                    "claim_id": claim["id"],
+                    "status": claim["status"],
+                    "policyNumber": claim["policyNumber"],
+                    "customer": claim["customer"],
+                    "updatedAt": claim["updatedAt"],
+                },
+                ConditionExpression="attribute_not_exists(claim_id)",
+            )
+        except ClientError as error:
+            if error.response.get("Error", {}).get("Code") == "ConditionalCheckFailedException":
+                raise HTTPException(status_code=409, detail=f"Claim already exists: {claim['id']}") from error
+            raise
 
     def _get_notes_for_claim(self, claim_id: str) -> list[dict[str, Any]]:
         notes = self._load_json(self.notes_file)

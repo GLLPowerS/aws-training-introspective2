@@ -38,6 +38,14 @@ data "aws_iam_policy_document" "backend_workload_permissions" {
   }
 
   statement {
+    sid = "DynamoDbWriteClaims"
+    actions = [
+      "dynamodb:PutItem"
+    ]
+    resources = [aws_dynamodb_table.claims.arn]
+  }
+
+  statement {
     sid = "S3ReadClaimNotes"
     actions = [
       "s3:GetObject"

@@ -19,6 +19,14 @@ class ClaimSummaryResponse(BaseModel):
     source: str
 
 
+class ClaimCreateRequest(BaseModel):
+    id: str
+    status: str
+    policyNumber: str
+    customer: str
+    updatedAt: str | None = None
+
+
 app = FastAPI(title="Claim Status API", version="0.1.0")
 claims_service = ClaimsService(project_root=PROJECT_ROOT)
 
@@ -26,6 +34,11 @@ claims_service = ClaimsService(project_root=PROJECT_ROOT)
 @app.get("/claims/{claim_id}")
 def get_claim(claim_id: str) -> dict[str, Any]:
     return claims_service.get_claim_or_404(claim_id)
+
+
+@app.post("/claims")
+def create_claim(payload: ClaimCreateRequest) -> dict[str, Any]:
+    return claims_service.create_claim(payload.model_dump(exclude_none=True))
 
 
 @app.post("/claims/{claim_id}/summarize", response_model=ClaimSummaryResponse)
