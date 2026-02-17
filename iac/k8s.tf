@@ -74,8 +74,13 @@ resource "kubernetes_deployment_v1" "backend" {
           }
 
           env {
-            name  = "DYNAMODB_NOTES_TABLE_NAME"
-            value = aws_dynamodb_table.claim_notes.name
+            name  = "NOTES_S3_BUCKET_NAME"
+            value = aws_s3_bucket.claim_notes.bucket
+          }
+
+          env {
+            name  = "NOTES_S3_OBJECT_KEY"
+            value = "notes.json"
           }
 
           env {

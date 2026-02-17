@@ -22,5 +22,7 @@ Required endpoints:
 
 - `BEDROCK_MODEL_ID` — model ID to call through Bedrock Runtime.
 - `AWS_REGION` — AWS region (default: `us-east-1`).
+- `NOTES_S3_BUCKET_NAME` — S3 bucket used to persist notes.
+- `NOTES_S3_OBJECT_KEY` — S3 object key for notes JSON (default: `notes.json`).
 
 If `BEDROCK_MODEL_ID` is not set, summarization uses a local fallback response.

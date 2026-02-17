@@ -28,27 +28,6 @@ resource "aws_dynamodb_table" "claims" {
   }
 }
 
-resource "aws_dynamodb_table" "claim_notes" {
-  name         = "${local.name_prefix}-claim-notes"
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "claim_id"
-  range_key    = "note_id"
-
-  attribute {
-    name = "claim_id"
-    type = "S"
-  }
-
-  attribute {
-    name = "note_id"
-    type = "S"
-  }
-
-  point_in_time_recovery {
-    enabled = true
-  }
-}
-
 resource "aws_s3_bucket" "claim_notes" {
   bucket = "${local.name_prefix}-claim-notes-${random_string.suffix.result}"
 }

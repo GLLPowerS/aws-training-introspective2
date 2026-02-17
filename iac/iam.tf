@@ -46,29 +46,18 @@ data "aws_iam_policy_document" "backend_workload_permissions" {
   }
 
   statement {
-    sid = "DynamoDbReadNotes"
-    actions = [
-      "dynamodb:GetItem",
-      "dynamodb:Query",
-      "dynamodb:Scan"
-    ]
-    resources = [aws_dynamodb_table.claim_notes.arn]
-  }
-
-  statement {
-    sid = "DynamoDbWriteNotes"
-    actions = [
-      "dynamodb:PutItem",
-      "dynamodb:UpdateItem",
-      "dynamodb:DeleteItem"
-    ]
-    resources = [aws_dynamodb_table.claim_notes.arn]
-  }
-
-  statement {
     sid = "S3ReadClaimNotes"
     actions = [
       "s3:GetObject"
+    ]
+    resources = ["${aws_s3_bucket.claim_notes.arn}/*"]
+  }
+
+  statement {
+    sid = "S3WriteClaimNotes"
+    actions = [
+      "s3:PutObject",
+      "s3:DeleteObject"
     ]
     resources = ["${aws_s3_bucket.claim_notes.arn}/*"]
   }
